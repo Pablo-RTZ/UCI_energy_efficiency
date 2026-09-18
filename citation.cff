@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+title: QMC Option Pricing
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Pablo
+    family-names: Ortiz Badenes
+repository-code: 'https://github.com/Pablo-RTZ/UCI_energy_efficiency'
+abstract: >-
+  A repository on dimensionality reduction and regularization
+  applied to the UCI energy efficiency dataset.
+license: GPL-3.0-or-later
