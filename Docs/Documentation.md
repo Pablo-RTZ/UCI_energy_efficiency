@@ -27,9 +27,7 @@ $$
 Furthermore, as calculating inverses can be computationally expensive, QR factorization can be used. Let $X=QR$, where $Q^T=Q^{-1}$. Then,
 
 $$
-
 \beta = (X^TX)^{-1}X^Ty = \left((QR)^T(QR)\right)^{-1}(QR)^Ty = \left(R^TQ^TQR\right)^{-1}R^TQ^Ty
-
 $$
 
 Since $Q^TQ=I$, this simplifies to
@@ -94,7 +92,7 @@ which is the analytical solution to Ridge regression. Intuitively, increasing th
 
 On the [`Ridge_Regression.mlx`](../MATLAB/Ridge_Regression.mlx) notebook, the analytical solution is implemented. By varying the regularization strength, increasingly simpler models that retain comparably small erorrs can be obtained. However, it gets to a point where error starts to increase faster, making it less worth it to keep making simpler models.
 
-![Ridge RMSE vs Regularization strength](../Assets/Ridge_RMSE.png)
+![Ridge RMSE vs Regularization strength](../Assets/RIDGE_RMSE.png)
 
 ### LASSO penalty
 
@@ -113,3 +111,32 @@ As with Ridge, LASSO allows for a substantial decrease in the coefficients vecto
 ![LASSO RMSE vs Regularization strength](../Assets/LASSO_RMSE.png)
 
 ![LASSO coefficients vs Regularization strength](../Assets/LASSO_coeffs.png)
+
+## K-fold tuning
+
+The [`KFold_Tuning.mlx`](../MATLAB/KFold_Tuning.mlx) notebook focuses on the problem of hyperparameter selection for regularized models. In Ridge and LASSO, the parameter controlling model complexity ($\lambda$ or $\alpha$) affects the bias-variance tradeoff: very small values can lead to overfitting and unstable predictions, while very large values can oversimplify the model and increase error. Selecting a single train/test split is often misleading because the result depends strongly on which observations happen to fall into the training or validation set.
+
+K-fold cross-validation addresses this by partitioning the data into $K$ disjoint subsets, or folds. The procedure is:
+
+1. Split the dataset into $K$ folds.
+2. For each fold, train the model on the remaining $K-1$ folds.
+3. Evaluate the model on the held-out fold using a performance metric such as RMSE.
+4. Repeat this process for every fold.
+5. Average the validation errors to obtain a robust estimate of the model performance for that regularization value.
+6. Repeat the whole process across a grid of candidate regularization strengths and choose the value with the lowest mean validation error.
+
+Mathematically, for a fixed regularization parameter $\lambda$, the cross-validation score is
+
+$$
+\mathrm{CV}(\lambda)=\frac{1}{K}\sum_{k=1}^{K}\mathrm{RMSE}_k(\lambda),
+$$
+
+where $\mathrm{RMSE}_k(\lambda)$ is the root mean squared error measured on fold $k$ after training on the remaining folds. This average reduces the variance of the estimator compared with a single split and provides a more stable basis for model selection.
+
+In practice, this makes the tuning step more reliable: instead of fitting a model on one arbitrary split and trusting that result, the algorithm checks how well each value of $\lambda$ generalizes across several partitions of the same data. Once the best parameter is chosen, the final model can be refit on the full training data and then evaluated on a separate final test set if desired.
+
+The result of this tuning process on the UCI Energy Efficiency dataset is shown below. The plot summarizes the cross-validation error across candidate regularization values and highlights the range where the model performs best.
+
+![K-fold cross-validation tuning curve](../Assets/KFold_curves.png)
+
+For this specific dataset, the optimal parameters found are $\lambda = 0.1$ for Ridge and $\alpha = 0.46415$ for LASSO.
