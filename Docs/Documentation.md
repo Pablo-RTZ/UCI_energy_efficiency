@@ -140,3 +140,13 @@ The result of this tuning process on the UCI Energy Efficiency dataset is shown 
 ![K-fold cross-validation tuning curve](../Assets/KFold_curves.png)
 
 For this specific dataset, the optimal parameters found are $\lambda = 0.1$ for Ridge and $\alpha = 0.46415$ for LASSO.
+
+## Learning curves for the methods
+
+The [`Learninc_curves.mlx`](../MATLAB/Learning_curves.mlx) notebook evaluates each model over the same set of sample fractions, using multiple random train/test splits and various proportions, and reports mean RMSE with standard deviation. This allows for the bias-variance tradeoff is visible. The optimal parameters for $\alpha$ and $\lambda$ found above are used.
+
+![Learning curves for each model](../Assets/Learning_curves.png)
+
+The learning curves demonstrate that increasing the training proportion consistently improves model generalization, as seen by the steady decrease in Test RMSE across all models. Notably, Train RMSE exhibits a slight upward trend as training data increases; this is a classic statistical phenomenon where larger, more varied datasets prevent the model from perfectly memorizing the training samples, thereby reducing variance and improving performance on unseen data. Among the models, Ridge performs the poorest with consistently high error, while Linear and LASSO perform similarly, with LASSO achieving the lowest test error at higher training proportions.
+
+These results illustrate the bias-variance tradeoff: at low training proportions, models suffer from high variance, fitting the small sample too closely but generalizing poorly. As the training proportion grows, the models shift toward lower variance and reduced bias, closing the gap between training and test error. The convergence of the curves at higher proportions indicates that adding more data yields diminishing returns, and the model has learned a robust underlying pattern rather than noise.
